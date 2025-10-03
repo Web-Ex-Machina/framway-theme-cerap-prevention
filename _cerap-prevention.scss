@@ -1,0 +1,17 @@
+.splitForm{
+	.candidate{
+		grid-column: 1/-1; 
+		// background: body(block-background); padding: 1em 2em; @include paper();
+		.tab{
+			@include grid($autocols:auto-fit,$gap:1em);--griditem-minwidth: 300px; column-gap: 2em;
+			.explanation{grid-column: 1/-1;}
+		}
+	}
+}
+
+.tabs.wizard{
+	.tabs__nav{display: inline-flex; flex-wrap: wrap; gap: 3px;
+		%btn{margin-block: 0;}
+		[data-action]{order:1;}
+	}
+}
