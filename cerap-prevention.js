@@ -30,6 +30,10 @@ $(function(){
 				
 				tabs.content.$el.append($('<div></div>').html(newTab));
 				newTab.unwrap()
+				
+				if (typeof intlTelInput !== "undefined") {
+					initIntlInputs(document.querySelectorAll("input[type=tel]:not(.ready)"));
+				}
 
 				let buttonNewTab = $(tabs.refbutton);
 				buttonNewTab.removeClass('active')
@@ -93,4 +97,33 @@ $(function(){
 			})
 		}
 	}
+
+
+	// INTL inputs
+	if (typeof intlTelInput !== "undefined") {
+		var initIntlInputs = function(inputs){
+			for(let i=0; i<inputs.length; i++){
+				window.intlTelInput(inputs[i], {
+					preferredCountries: ["fr", "gb"],
+					//separateDialCode: true,
+					autoPlaceholder: "aggressive",
+					utilsScript: "assets/intl-tel-input/build/js/utils.js"
+				});
+				inputs[i].classList.add('ready')
+			}
+		}
+		initIntlInputs(document.querySelectorAll("input[type=tel]:not(.ready)"));
+		
+		if ($('.splitForm input[type=tel]').length) {
+			$('body').on('keyup change', '.splitForm input[type=tel]', function(e) {
+				this.setCustomValidity('');
+				let intl = window.intlTelInputGlobals.getInstance(this);
+				if (!intl.isValidNumber()){
+					this.setCustomValidity('Numéro de téléphone non valide');
+					this.reportValidity()
+				}
+			});
+		}
+	}
 });
+
