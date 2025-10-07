@@ -16,7 +16,7 @@ $(function(){
 				newTab.find('input,select,textarea').each(function(){
 					let input = this;
 					input.setAttribute('id',input.getAttribute('id')+'--'+idNewTab);
-					input.setAttribute('name',input.getAttribute('name').replace(/\[.*\]/gm,'['+idNewTab+']'));
+					input.setAttribute('name',input.getAttribute('name').replace(/_\d*$/gm,'_'+idNewTab+''));
 				})
 				newTab.find('select[data-select2-id]').each(function(){
 					let input = this;
