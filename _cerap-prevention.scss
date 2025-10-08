@@ -18,3 +18,40 @@
 
 
 .intl-tel-input { width: 100%; }
+
+
+@mixin block-notif(){
+	--notif: var(--primary);
+	--notif-color-l: 0;
+	--notif-color-bg-l: 30;
+	&:not([class*=m-]){margin-block: 1em;}
+	padding: 1.5em 2em;
+	background: Hsl(from var(--notif) h s calc(l + var(--notif-color-bg-l))); 
+	color     : Hsl(from var(--notif) h s calc(l + var(--notif-color-l)));
+}
+.block-success,
+.block-info,
+.block-warning,
+.block-error{
+	@include block-notif();
+}
+.block-success {
+	--notif: #{$success};
+	--notif-color-l: -10;
+	--notif-color-bg-l: 50;
+}
+.block-info    {
+	--notif: #{$info};
+	--notif-color-l: 0;
+	--notif-color-bg-l: 40;
+}
+.block-warning {
+	--notif: #{$warning};
+	--notif-color-l: -20;
+	--notif-color-bg-l: 30;
+}
+.block-error   {
+	--notif: #{$error};
+	--notif-color-l: 0;
+	--notif-color-bg-l: 30;
+}
