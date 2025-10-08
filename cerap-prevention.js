@@ -126,7 +126,7 @@ $(function(){
 		}
 		
 		if ($('input[name=candidates]').val() != "") {
-			console.log('do the tabs things');
+			// console.log('do the tabs things');
 			try{
 				let candidates = JSON.parse($('input[name=candidates]').val());
 				if (tabs.$el.find('.tab').length<candidates.length)
@@ -140,7 +140,7 @@ $(function(){
 				tabs.nav.buttons.last().trigger('click');
 
 				for(let i in candidates){
-					console.log(i,candidates[i]);
+					// console.log(i,candidates[i]);
 					let currTab = tabs.content.tabs[i]
 					for(let f in candidates[i]){
 						// console.log(f,candidates[i][f]);
@@ -168,9 +168,26 @@ $(function(){
 				console.log(e)
 			}
 		}
+
+		if ($('form#inscriptionForm')) {
+			if (typeof inscriptionForm_errors != "undefined") {
+				let form = $('form#inscriptionForm');
+				form.before('<div class="error-container block-error"></div>');
+				let errContainer = form.prev('.error-container')
+				
+				for(let error in inscriptionForm_errors){
+					if(form.find('input[name='+error+']').length){
+						let input = form.find('input[name='+error+']');
+						let labelError = utils.getInputLabel(input.attr('id'),input.attr('name').replace('[]', ''));
+						console.log(labelError);
+						let strError = 'Champ <b>'+labelError+'</b>: '+inscriptionForm_errors[error];
+						if (error.split('_').length>1)
+							strError = 'Champ <b>'+labelError+'</b> de <b>Candidat #'+(parseInt(error.split('_')[1])+1)+'</b>: '+inscriptionForm_errors[error];
+						utils.renderError(error,strError,errContainer)
+					}
+				}
+			}
+		}
 	}
-
-
-	
 });
 
