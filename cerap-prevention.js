@@ -1,4 +1,31 @@
 $(function(){
+	// INTL inputs
+	if (typeof intlTelInput !== "undefined") {
+		var initIntlInputs = function(inputs){
+			for(let i=0; i<inputs.length; i++){
+				window.intlTelInput(inputs[i], {
+					preferredCountries: ["fr", "gb"],
+					//separateDialCode: true,
+					autoPlaceholder: "aggressive",
+					utilsScript: "assets/intl-tel-input/build/js/utils.js"
+				});
+				inputs[i].classList.add('ready')
+			}
+		}
+		initIntlInputs(document.querySelectorAll("input[type=tel]:not(.ready)"));
+		
+		if ($('.splitForm input[type=tel]').length) {
+			$('body').on('keyup change', '.splitForm input[type=tel]', function(e) {
+				this.setCustomValidity('');
+				let intl = window.intlTelInputGlobals.getInstance(this);
+				if (!intl.isValidNumber()){
+					this.setCustomValidity('Numéro de téléphone non valide');
+					this.reportValidity()
+				}
+			});
+		}
+	}
+
 	if ($('.tabs.wizard').length) {
 		$('.tabs.wizard').each(function(){
 			let tabs = $(this).tabs('get');
@@ -71,8 +98,8 @@ $(function(){
 		})
 	}
 	if ($('.tabs.wizard.candidate').length) {
+		let tabs = $('.tabs.wizard.candidate').tabs('get');
 		if ($('input[name=numberInterns]').length) {
-			let tabs = $('.tabs.wizard.candidate').tabs('get');
 
 			tabs.min = $('input[name=numberInterns]').attr('min');
 			tabs.max = $('input[name=numberInterns]').attr('max');
@@ -95,35 +122,55 @@ $(function(){
 					}
 				}
 			})
+			.trigger('change');
 		}
-	}
+		
+		if ($('input[name=candidates]').val() != "") {
+			console.log('do the tabs things');
+			try{
+				let candidates = JSON.parse($('input[name=candidates]').val());
+				if (tabs.$el.find('.tab').length<candidates.length)
+					for (let i = candidates.length - tabs.$el.find('.tab').length; i > 0; i--) {
+						tabs.addNewTab();
+					}
+				if (tabs.$el.find('.tab').length>candidates.length)
+					for (let i = tabs.$el.find('.tab').length; i > candidates.length; i--) {
+						tabs.removeTab(tabs.content.tabs.last());
+					}
+				tabs.nav.buttons.last().trigger('click');
 
-
-	// INTL inputs
-	if (typeof intlTelInput !== "undefined") {
-		var initIntlInputs = function(inputs){
-			for(let i=0; i<inputs.length; i++){
-				window.intlTelInput(inputs[i], {
-					preferredCountries: ["fr", "gb"],
-					//separateDialCode: true,
-					autoPlaceholder: "aggressive",
-					utilsScript: "assets/intl-tel-input/build/js/utils.js"
-				});
-				inputs[i].classList.add('ready')
+				for(let i in candidates){
+					console.log(i,candidates[i]);
+					let currTab = tabs.content.tabs[i]
+					for(let f in candidates[i]){
+						// console.log(f,candidates[i][f]);
+						if ($(currTab).find('[name*='+f+'_]').length) {
+							if ($(currTab).find('[name*='+f+'_]').get(0).nodeName == 'INPUT') {
+								switch($(currTab).find('[name*='+f+'_]').attr('type')){
+									case 'tel':
+									case 'email':
+									case 'text': $(currTab).find('[name*='+f+'_]').val(candidates[i][f]); break;
+									case 'radio':
+									case 'checkbox':
+										if ($(currTab).find('[name*='+f+'_][value="'+candidates[i][f]+'"]').length) 
+											$(currTab).find('[name*='+f+'_][value="'+candidates[i][f]+'"]').get(0).checked = true; 
+										break;
+								}
+							} else if($(currTab).find('[name*='+f+'_]').get(0).nodeName == 'SELECT'){
+								$(currTab).find('[name*='+f+'_]').get(0).value = candidates[i][f];
+								$(currTab).find('[name*='+f+'_]').trigger('change'); 
+							}
+							
+						}
+					}
+				}
+			} catch(e){
+				console.log(e)
 			}
 		}
-		initIntlInputs(document.querySelectorAll("input[type=tel]:not(.ready)"));
-		
-		if ($('.splitForm input[type=tel]').length) {
-			$('body').on('keyup change', '.splitForm input[type=tel]', function(e) {
-				this.setCustomValidity('');
-				let intl = window.intlTelInputGlobals.getInstance(this);
-				if (!intl.isValidNumber()){
-					this.setCustomValidity('Numéro de téléphone non valide');
-					this.reportValidity()
-				}
-			});
-		}
 	}
+
+
+	
 });
 
